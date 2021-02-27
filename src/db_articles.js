@@ -24,12 +24,11 @@ var selectArcticles = async function() {
     return await db
         .query(query)
         .then(async res => {
-            await res.map(async article => {
-                await db_accounts.getAccount(article.author_id).then(account => {
-                    article.author = account;
+            for (let article in res) {
+                await db_accounts.getAccount(res[article].author_id).then(account => {
+                    res[article].author = account;
                 })
-            })
-            console.log(res)
+            }
             return transFormArticlesResponseToResult(res)
         })
         .catch(e => console.error(e.stack))
