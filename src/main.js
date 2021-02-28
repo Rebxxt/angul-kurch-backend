@@ -1,4 +1,5 @@
 var db_articles = require('./db_articles')
+var db_accounts = require('./db_accounts')
 var bodyParser = require('body-parser')
 
 var express = require('express')
@@ -34,6 +35,20 @@ app.post('/api/articles', async (req, res) => {
         res.status(400);
     }
     res.send(result);
+})
+app.put('/api/articles/rating', async (req, res) => {
+    var result = await db_articles.updateRating(req.body).then(result => {
+        return result
+    });
+    res.status(200).send(result);
+})
+
+//ACCOUNT
+app.get('/api/account', async (req, res) => {
+    var result = await db_accounts.getAccount(req.query.id).then(result => {
+        return result
+    });
+    res.status(200).send(result);
 })
 
 app.listen(port, () => {

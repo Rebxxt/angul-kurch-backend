@@ -8,7 +8,8 @@ function transFormArticleResponseToResult(article) {
         content: article.content,
         authorId: article.author_id,
         author: article.author,
-        dateCreated: article.date_created
+        dateCreated: article.date_created,
+        rating: article.rating,
     }
 }
 
@@ -20,7 +21,7 @@ function transFormArticlesResponseToResult(response) {
 
 var selectArcticles = async function() {
     const db_accounts = require('./db_accounts')
-    const query = 'SELECT * FROM blog.articles'
+    const query = 'SELECT * FROM blog.articles WHERE is_deleted=false'
     return await db
         .query(query)
         .then(async res => {
@@ -36,8 +37,7 @@ var selectArcticles = async function() {
 
 var addArcticles = async function(data) {
     const query = `
-        INSERT INTO blog.articles 
-        (title, content, author_id) 
+        INSERT INTO blog.articles (title, content, author_id) 
         VALUES ('${data.title}', '${data.content}', ${data.author_id})
     `;
 
@@ -47,15 +47,38 @@ var addArcticles = async function(data) {
 }
 
 var deleteArcticles = async function(data) {
-    const query = `
-        UPDATE INTO blog.articles SET is_deleted=true WHERE id=${data.id}
-    `;
+    const query = `UPDATE INTO blog.articles SET is_deleted=true WHERE id=${data.id}`;
 
     return await db
         .query(query)
         .then(res => res)
 }
 
+var updateRating = async function(data) {
+    const existLike = await db
+        .query(`SELECT * FROM blog.article_liked WHERE ${data.authorId} = author_id`)
+        .then(res => {
+            console.log(res)
+            if (res.length > 0) {
+                if (res[0].like) {
+
+                }
+            } else {
+                let query;
+                data.count
+                    ? query = `UPDATE INTO blog.articles SET rating=rating+1 WHERE id=${data.id}`
+                    : query = `UPDATE INTO blog.articles SET rating=rating-1 WHERE id=${data.id}`;
+            }
+            return false
+        })
+    // let query;
+
+    // return await db
+    //     .query(query)
+    //     .then(res => res)
+}
+
 module.exports.selectArcticles = selectArcticles
 module.exports.addArcticles = addArcticles
 module.exports.deleteArcticles = deleteArcticles
+module.exports.updateRating = updateRating
