@@ -14,9 +14,11 @@ var authAccount = async function(response) {
     return await connection.db
         .query(query)
         .then(res => {
+            if (res.length == 0) {
+                throw new Error('Неверный логин/пароль')
+            }
             return res[0]
         })
-        .catch(e => console.error(e.stack))
 }
 
 module.exports.authAccount = authAccount

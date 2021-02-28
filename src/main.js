@@ -56,8 +56,14 @@ app.get('/api/account', async (req, res) => {
 app.get('/api/auth', async (req, res) => {
     var result = await db_auth.authAccount(req.query).then(result => {
         return result
+    }).catch(e => {
+        return false;
     });
-    res.status(200).send(result);
+    
+    if (result)
+        res.send(result);
+    else
+        res.status(400).send(result)
 })
 
 app.listen(port, () => {
