@@ -1,5 +1,4 @@
-var pgp = require("pg-promise")();
-var db = pgp("postgres://postgres:qwerty@localhost:5432/postgres");
+var connection = require('./connection')
 
 function transFormAuthResponseToResult(account) {
     return {
@@ -12,7 +11,7 @@ function transFormAuthResponseToResult(account) {
 
 var authAccount = async function(response) {
     const query = `SELECT * FROM blog.accounts WHERE login='${response.login}' AND password='${response.password}'`
-    return await db
+    return await connection.db
         .query(query)
         .then(res => {
             return res[0]

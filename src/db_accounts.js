@@ -1,5 +1,4 @@
-var pgp = require("pg-promise")();
-var db = pgp("postgres://postgres:qwerty@localhost:5432/postgres");
+var connection = require('./connection')
 
 function transFormAccountResponseToResult(account) {
     return {
@@ -18,7 +17,7 @@ function transFormAccountsResponseToResult(accounts) {
 
 var selectAccounts = async function() {
     const query = 'SELECT * FROM blog.accounts'
-    return await db
+    return await connection.db
         .query(query)
         .then(res => {
             return transFormAccountsResponseToResult(res)
@@ -28,7 +27,7 @@ var selectAccounts = async function() {
 
 var getAccount = async function(id) {
     const query = `SELECT * FROM blog.accounts WHERE id=${id}`
-    return await db
+    return await connection.db
         .query(query)
         .then(res => {
             return transFormAccountResponseToResult(res[0])
@@ -43,7 +42,7 @@ var addAccount = async function(data) {
         VALUES ('${data.firstname}', '${data.lastname}', ${data.login}, ${data.password}, ${data.company_id})
     `;
 
-    return await db
+    return await connection.db
         .query(query)
         .then(res => res)
 }
@@ -53,7 +52,7 @@ var banAccount = async function(data) {
         UPDATE INTO blog.accounts SET is_banned=true WHERE id=${data.id}
     `;
 
-    return await db
+    return await connection.db
         .query(query)
         .then(res => res)
 }

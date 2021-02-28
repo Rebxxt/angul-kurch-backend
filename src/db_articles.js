@@ -1,5 +1,4 @@
-var pgp = require("pg-promise")();
-var db = pgp("postgres://postgres:qwerty@localhost:5432/postgres");
+var connection = require('./connection')
 
 function transFormArticleResponseToResult(article) {
     return {
@@ -22,7 +21,7 @@ function transFormArticlesResponseToResult(response) {
 var selectArcticles = async function() {
     const db_accounts = require('./db_accounts')
     const query = 'SELECT * FROM blog.articles WHERE is_deleted=false'
-    return await db
+    return await connection.db
         .query(query)
         .then(async res => {
             for (let article in res) {
@@ -41,7 +40,7 @@ var addArcticles = async function(data) {
         VALUES ('${data.title}', '${data.content}', ${data.author_id})
     `;
 
-    return await db
+    return await connection.db
         .query(query)
         .then(res => res)
 }
@@ -49,13 +48,13 @@ var addArcticles = async function(data) {
 var deleteArcticles = async function(data) {
     const query = `UPDATE INTO blog.articles SET is_deleted=true WHERE id=${data.id}`;
 
-    return await db
+    return await connection.db
         .query(query)
         .then(res => res)
 }
 
 var updateRating = async function(data) {
-    const existLike = await db
+    const existLike = await connection.db
         .query(`SELECT * FROM blog.article_liked WHERE ${data.authorId} = author_id`)
         .then(res => {
             console.log(res)
