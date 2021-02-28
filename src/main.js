@@ -1,5 +1,6 @@
 var db_articles = require('./db_articles')
 var db_accounts = require('./db_accounts')
+var db_auth = require('./db_auth')
 var bodyParser = require('body-parser')
 
 var express = require('express')
@@ -46,6 +47,14 @@ app.put('/api/articles/rating', async (req, res) => {
 //ACCOUNT
 app.get('/api/account', async (req, res) => {
     var result = await db_accounts.getAccount(req.query.id).then(result => {
+        return result
+    });
+    res.status(200).send(result);
+})
+
+//AUTH
+app.get('/api/auth', async (req, res) => {
+    var result = await db_auth.authAccount(req.query).then(result => {
         return result
     });
     res.status(200).send(result);
