@@ -65,6 +65,31 @@ app.get('/api/auth', async (req, res) => {
     else
         res.status(400).send(result)
 })
+app.post('/api/auth', async (req, res) => {
+    var result = await db_auth.regAccount(req.body).then(result => {
+        return result
+    }).catch(e => {
+        return false;
+    });
+    
+    if (result)
+        res.send(result);
+    else
+        res.status(400).send(result)
+})
+
+app.get('/api/token', async (req, res) => {
+    var result = await db_auth.checkToken(req.query).then(result => {
+        return result
+    }).catch(e => {
+        return false;
+    });
+    
+    if (result)
+        res.send(result);
+    else
+        res.status(400).send(result)
+})
 
 app.listen(port, () => {
     console.log('Listening in localhost:' + port);
