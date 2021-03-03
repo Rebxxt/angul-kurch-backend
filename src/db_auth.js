@@ -12,8 +12,8 @@ function makeid(length) {
 
 function transformQueryResultToResponse(account) {
     return {
-        firstName: account.firstname,
-        lastName: account.lastname,
+        firstname: account.firstname,
+        lastname: account.lastname,
         login: account.login,
         id: account.id,
     }
@@ -32,28 +32,27 @@ var authAccount = async function(response) {
         })
 }
 
-var regAccount = async function(response) {
-    let query = `SELECT * FROM blog.accounts WHERE login='${response.login}'`
+var regAccount = async function(request) {
+    let query = `SELECT * FROM blog.accounts WHERE login='${request.login}'`
     const exist = await connection.db
         .query(query)
         .then(res => {
             return res[0]
         })
-    if (exist == null) {
-        query = `INSERT INTO blog.accounts (firstname, lastname, login, password) VALUES ('${response.firstName}', '${response.lastName}', '${response.login}', '${response.password}')`
-        const response = await connection.db
-            .query(query)
-            .then(res => {
-                return true;
-            })
-        if (response) {
-            return genToken(response.login)
-        } else {
-            return false
-        }
+    if (exist != null) {
+        return false;
     }
-
-    return false;
+    query = `INSERT INTO blog.accounts (firstname, lastname, login, password) VALUES ('${request.firstname}', '${request.lastname}', '${request.login}', '${request.password}')`
+    const response = await connection.db
+        .query(query)
+        .then(res => {
+            return true;
+        })
+    if (response) {
+        return { token: await genToken(response.login) }
+    } else {
+        return false
+    }
 }
 
 var genToken = async function(login) {
@@ -78,7 +77,6 @@ var remToken = async function(login) {
 }
 
 var checkToken = async function(token) {
-    console.log(token)
     let query = `SELECT login FROM blog.auth_tokens WHERE token='${token.token}'`
     let temp = await connection.db
         .query(query)

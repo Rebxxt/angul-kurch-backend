@@ -37,7 +37,7 @@ var selectArcticles = async function() {
 var addArcticles = async function(data) {
     const query = `
         INSERT INTO blog.articles (title, content, author_id) 
-        VALUES ('${data.title}', '${data.content}', ${data.author_id})
+        VALUES ('${data.title}', '${data.content[0]}', ${data.author_id})
     `;
 
     return await connection.db

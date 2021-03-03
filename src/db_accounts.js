@@ -2,8 +2,8 @@ var connection = require('./connection')
 
 function transFormAccountResponseToResult(account) {
     return {
-        firstName: account.firstname,
-        lastName: account.lastname,
+        firstname: account.firstname,
+        lastname: account.lastname,
         login: account.login,
         id: account.id,
         companyId: account.company_id

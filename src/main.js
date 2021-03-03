@@ -19,7 +19,8 @@ app.get('/api/articles', async (req, res) => {
 })
 app.post('/api/articles', async (req, res) => {
     var body = req.body;
-    if (body.title && body.content && typeof body.author_id === 'number') {
+    console.log(body, parseInt(body.author_id), typeof parseInt(body.author_id) === "number")
+    if (body.title && body.content && typeof parseInt(body.author_id) === "number") {
         var result = await db_articles.addArcticles(body)
             .then(result => {
                 res.status(200);
@@ -71,7 +72,7 @@ app.post('/api/auth', async (req, res) => {
     }).catch(e => {
         return false;
     });
-    
+    console.log('RESULT', result)
     if (result)
         res.send(result);
     else
