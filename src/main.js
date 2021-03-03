@@ -19,7 +19,6 @@ app.get('/api/articles', async (req, res) => {
 })
 app.post('/api/articles', async (req, res) => {
     var body = req.body;
-    console.log(body, parseInt(body.author_id), typeof parseInt(body.author_id) === "number")
     if (body.title && body.content && typeof parseInt(body.author_id) === "number") {
         var result = await db_articles.addArcticles(body)
             .then(result => {
@@ -37,6 +36,12 @@ app.post('/api/articles', async (req, res) => {
         res.status(400);
     }
     res.send(result);
+})
+app.delete('/api/articles', async (req, res) => {
+    var result = await db_articles.deleteArcticles(req.query).then(result => {
+        return result
+    });
+    res.status(200).send(result);
 })
 app.put('/api/articles/rating', async (req, res) => {
     var result = await db_articles.updateRating(req.body).then(result => {

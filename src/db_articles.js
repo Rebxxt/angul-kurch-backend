@@ -46,7 +46,7 @@ var addArcticles = async function(data) {
 }
 
 var deleteArcticles = async function(data) {
-    const query = `UPDATE INTO blog.articles SET is_deleted=true WHERE id=${data.id}`;
+    const query = `UPDATE blog.articles SET is_deleted=true WHERE id=${data.id}`;
 
     return await connection.db
         .query(query)
