@@ -34,6 +34,22 @@ var selectArcticles = async function() {
         .catch(e => console.error(e.stack))
 }
 
+var selectArcticle = async function(id) {
+    const db_accounts = require('./db_accounts')
+    const query = 'SELECT * FROM blog.articles WHERE is_deleted=false AND id=' + id
+    return await connection.db
+        .query(query)
+        .then(async res => {
+            for (let article in res) {
+                await db_accounts.getAccount(res[article].author_id).then(account => {
+                    res[article].author = account;
+                })
+            }
+            return transFormArticlesResponseToResult(res)
+        })
+        .catch(e => console.error(e.stack))
+}
+
 var addArcticles = async function(data) {
     const query = `
         INSERT INTO blog.articles (title, content, author_id) 
@@ -77,6 +93,7 @@ var updateRating = async function(data) {
     //     .then(res => res)
 }
 
+module.exports.selectArcticle = selectArcticle
 module.exports.selectArcticles = selectArcticles
 module.exports.addArcticles = addArcticles
 module.exports.deleteArcticles = deleteArcticles

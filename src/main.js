@@ -49,6 +49,13 @@ app.put('/api/articles/rating', async (req, res) => {
     });
     res.status(200).send(result);
 })
+//ARTICLE
+app.get('/api/article', async (req, res) => {
+    var result = await db_articles.selectArcticle(req.query.id).then(result => {
+        return result
+    });
+    res.status(200).send(result);
+})
 
 //ACCOUNT
 app.get('/api/account', async (req, res) => {
