@@ -4,6 +4,7 @@ var db_auth = require('./db_auth')
 var bodyParser = require('body-parser')
 
 var express = require('express')
+const { db } = require('./connection')
 var app = express()
 var port = 3000;
 
@@ -12,7 +13,7 @@ app.use(bodyParser.json());
 
 // ARTICLES
 app.get('/api/articles', async (req, res) => {
-    var result = await db_articles.selectArcticles().then(result => {
+    var result = await db_articles.selectArcticles(req.query).then(result => {
         return result
     });
     res.status(200).send(result);
@@ -45,6 +46,12 @@ app.delete('/api/articles', async (req, res) => {
 })
 app.put('/api/articles/rating', async (req, res) => {
     var result = await db_articles.updateRating(req.body).then(result => {
+        return result
+    });
+    res.status(200).send(result);
+})
+app.put('/api/articles/status', async (req, res) => {
+    var result = await db_articles.setStatusArticle(req.body).then(result => {
         return result
     });
     res.status(200).send(result);

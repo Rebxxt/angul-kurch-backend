@@ -9,6 +9,9 @@ function transFormArticleResponseToResult(article) {
         author: article.author,
         dateCreated: article.date_created,
         rating: article.rating,
+        viewers: article.viewers,
+        moderate_apply: article.moderate_apply,
+        moderate_check: article.moderate_check,
     }
 }
 
@@ -18,9 +21,12 @@ function transFormArticlesResponseToResult(response) {
     });
 }
 
-var selectArcticles = async function() {
+var selectArcticles = async function(filters) {
     const db_accounts = require('./db_accounts')
-    const query = 'SELECT * FROM blog.articles WHERE is_deleted=false'
+    let query = `SELECT * FROM blog.articles WHERE (moderate_apply=${filters.moderate_apply} AND moderate_check=${filters.moderate_check})`
+    if (filters.deleted != true) {
+        query += ` AND is_deleted=false`
+    }
     return await connection.db
         .query(query)
         .then(async res => {
@@ -93,8 +99,17 @@ var updateRating = async function(data) {
     //     .then(res => res)
 }
 
+var setStatusArticle = async function(data) {
+    const query = `UPDATE blog.articles SET moderate_check=true, moderate_apply=${data.status} WHERE id=${data.id}`;
+
+    return await connection.db
+        .query(query)
+        .then(res => res)
+}
+
 module.exports.selectArcticle = selectArcticle
 module.exports.selectArcticles = selectArcticles
 module.exports.addArcticles = addArcticles
 module.exports.deleteArcticles = deleteArcticles
 module.exports.updateRating = updateRating
+module.exports.setStatusArticle = setStatusArticle

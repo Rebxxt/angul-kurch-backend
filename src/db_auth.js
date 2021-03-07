@@ -28,6 +28,8 @@ var authAccount = async function(response) {
                 throw new Error('Неверный логин/пароль')
             }
             res[0].token = await genToken(response.login)
+            res[0].roles = await getRoles(res[0].id)
+            console.log(res[0])
             return res[0]
         })
 }
@@ -88,13 +90,27 @@ var checkToken = async function(token) {
     query = `SELECT * FROM blog.accounts WHERE login='${temp}'`
     return await connection.db
         .query(query)
-        .then(res => {
+        .then(async res => {
+            res[0].roles = await getRoles(res[0].id)
             return res[0];
         }).catch(err => {
             console.log(err)
         });
 }
 
+var getRoles = async function(id) {
+    let query = `select role_code
+    from blog.accounts left join blog.account_roles on account_id = id
+    left join blog.roles on blog.roles.id = blog.account_roles.role_id
+    where blog.accounts.id=${id}`
+    return await connection.db
+        .query(query)
+        .then(res => {
+            return res.map(el => el.role_code)
+        })
+}
+
 module.exports.authAccount = authAccount
 module.exports.regAccount = regAccount
 module.exports.checkToken = checkToken
+module.exports.getRoles = getRoles
