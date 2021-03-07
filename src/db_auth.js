@@ -48,8 +48,8 @@ var regAccount = async function(request) {
         .then(res => {
             return true;
         })
-    if (response) {
-        return { token: await genToken(response.login) }
+    if (response === true) {
+        return { token: await genToken(request.login) }
     } else {
         return false
     }

@@ -1,10 +1,10 @@
 {
   "name": "kurchang_backend",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/main.js"
   },
   "author": "",
   "license": "ISC",
@@ -15,5 +15,15 @@
     "pg-promise": "^10.9.2",
     "tslint": "^6.1.3",
     "typescript": "^4.2.2"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rebxxt/angul-kurch-backend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Rebxxt/angul-kurch-backend/issues"
+  },
+  "homepage": "https://github.com/Rebxxt/angul-kurch-backend#readme",
+  "description": ""
 }

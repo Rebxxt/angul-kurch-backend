@@ -84,7 +84,6 @@ app.post('/api/auth', async (req, res) => {
     }).catch(e => {
         return false;
     });
-    console.log('RESULT', result)
     if (result)
         res.send(result);
     else
