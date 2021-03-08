@@ -1,5 +1,6 @@
 var db_articles = require('./db_articles')
 var db_accounts = require('./db_accounts')
+var db_comments = require('./db_comments')
 var db_auth = require('./db_auth')
 var bodyParser = require('body-parser')
 let multer = require('multer');
@@ -119,6 +120,25 @@ app.get('/api/token', async (req, res) => {
     else
         res.status(400).send(result)
 })
+
+//COMMENTS
+app.get('/api/comments', async (req, res) => {
+    var result = await db_comments.selectComments(req.query.article_id).then(result => {
+        return result
+    }).catch(err => {
+        res.status(403).send(err);
+    });
+    res.send(result);
+})
+app.post('/api/comments', async (req, res) => {
+    var result = await db_comments.addComments(req.body, req.headers.token).then(result => {
+        return result
+    }).catch(err => {
+        res.status(403).send(err);
+    });
+    res.send(result);
+})
+
 
 app.listen(port, () => {
     console.log('Listening in localhost:' + port);
