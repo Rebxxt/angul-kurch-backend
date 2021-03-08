@@ -21,7 +21,7 @@ function transFormAccountsResponseToResult(accounts) {
 }
 
 var selectAccounts = async function() {
-    const query = 'SELECT * FROM blog.accounts'
+    const query = 'SELECT firstname, lastname, login, id, company_id, rating, is_banned, date_registrated FROM blog.accounts'
     return await connection.db
         .query(query)
         .then(res => {
@@ -30,8 +30,12 @@ var selectAccounts = async function() {
         .catch(e => console.error(e.stack))
 }
 
-var getAccount = async function(id) {
-    let query = `SELECT * FROM blog.accounts WHERE id=${id}`
+var getAccount = async function(id, takePic) {
+    let query = `SELECT firstname, lastname, login, id, company_id, rating, is_banned, date_registrated`
+    if (takePic) {
+        query += `, pic`
+    }
+    query += ` FROM blog.accounts WHERE id=${id}`
     let account = await connection.db
         .query(query)
         .then(res => {
@@ -85,7 +89,7 @@ var setAccountPic = async function(req, id) {
     return await connection.db
         .query(query)
         .then(res => {
-            console.log('res', res)
+            
         }, err => {
             console.log('err', err)
         })

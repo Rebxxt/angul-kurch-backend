@@ -68,7 +68,7 @@ app.get('/api/article', async (req, res) => {
 
 //ACCOUNT
 app.get('/api/account', async (req, res) => {
-    var result = await db_accounts.getAccount(req.query.id).then(result => {
+    var result = await db_accounts.getAccount(req.query.id, req.query.takePic).then(result => {
         return result
     });
     res.status(200).send(result);
@@ -77,7 +77,7 @@ app.post('/api/account/pic', upload.fields([]), async (req, res) => {
     var result = await db_accounts.setAccountPic(req.body.file, req.body.id).then(result => {
         return result
     }, err => {
-        throw new Error(err);
+        throw err;
     });
     res.send('true');
 })
