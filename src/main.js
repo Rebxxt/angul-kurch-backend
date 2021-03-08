@@ -3,17 +3,7 @@ var db_accounts = require('./db_accounts')
 var db_auth = require('./db_auth')
 var bodyParser = require('body-parser')
 let multer = require('multer');
-let fs = require('fs')
-
-const storageConfig = multer.diskStorage({
-    destination: (req, file, cb) =>{
-        cb(null, "D:\\\\_uploads");
-    },
-    filename: (req, file, cb) =>{
-        cb(null, file.originalname);
-    }
-});
-let upload = multer({storage:storageConfig});
+let upload = multer();
 
 var express = require('express')
 const { db } = require('./connection')
@@ -83,11 +73,13 @@ app.get('/api/account', async (req, res) => {
     });
     res.status(200).send(result);
 })
-app.post('/api/account/pic', upload.single('file'), async (req, res) => {
-    var result = await db_accounts.setAccountPic(req.file, req.body.id).then(result => {
+app.post('/api/account/pic', upload.fields([]), async (req, res) => {
+    var result = await db_accounts.setAccountPic(req.body.file, req.body.id).then(result => {
         return result
+    }, err => {
+        throw new Error(err);
     });
-    res.status(200).send('true');
+    res.send('true');
 })
 
 //AUTH

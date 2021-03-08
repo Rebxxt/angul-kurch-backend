@@ -1,7 +1,6 @@
 var connection = require('./connection')
 
 function transFormAccountResponseToResult(account) {
-    console.log(account.pic)
     return {
         firstname: account.firstname,
         lastname: account.lastname,
@@ -79,9 +78,8 @@ var banAccount = async function(data) {
 }
 
 var setAccountPic = async function(req, id) {
-    console.log(id)
     const query = `
-        UPDATE blog.accounts SET pic=lo_import('${req.path}') WHERE id=${id}
+        UPDATE blog.accounts SET pic='${req}' WHERE id=${id}
     `;
 
     return await connection.db
