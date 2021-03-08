@@ -27,6 +27,9 @@ var selectArcticles = async function(filters) {
     if (filters.deleted != true) {
         query += ` AND is_deleted=false`
     }
+    if (filters.account_id != null) {
+        query += ` AND author_id=${filters.account_id}`
+    }
     return await connection.db
         .query(query)
         .then(async res => {
@@ -79,7 +82,6 @@ var updateRating = async function(data) {
     const existLike = await connection.db
         .query(`SELECT * FROM blog.article_liked WHERE ${data.authorId} = author_id`)
         .then(res => {
-            console.log(res)
             if (res.length > 0) {
                 if (res[0].like) {
 

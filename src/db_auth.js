@@ -29,7 +29,6 @@ var authAccount = async function(response) {
             }
             res[0].token = await genToken(response.login)
             res[0].roles = await getRoles(res[0].id)
-            console.log(res[0])
             return res[0]
         })
 }
