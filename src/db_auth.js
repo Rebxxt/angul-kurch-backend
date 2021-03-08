@@ -83,10 +83,19 @@ var checkToken = async function(token) {
     let temp = await connection.db
         .query(query)
         .then(res => {
-            return res[0].login;
+            if (res && res[0]) {
+                return res[0].login;
+            }
+            else
+            {
+                return false;
+            }
         }).catch(err => {
             console.log(err)
         });
+    if (temp === false) {
+        return false;
+    }
     query = `SELECT * FROM blog.accounts WHERE login='${temp}'`
     return await connection.db
         .query(query)

@@ -2,14 +2,26 @@ var db_articles = require('./db_articles')
 var db_accounts = require('./db_accounts')
 var db_auth = require('./db_auth')
 var bodyParser = require('body-parser')
+let multer = require('multer');
+let fs = require('fs')
+
+const storageConfig = multer.diskStorage({
+    destination: (req, file, cb) =>{
+        cb(null, "uploads");
+    },
+    filename: (req, file, cb) =>{
+        cb(null, file.originalname);
+    }
+});
+let upload = multer({storage:storageConfig});
 
 var express = require('express')
 const { db } = require('./connection')
 var app = express()
 var port = 3000;
 
-app.use(bodyParser.urlencoded());
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
+app.use(bodyParser.json({limit: '10mb', extended: true}));
 
 // ARTICLES
 app.get('/api/articles', async (req, res) => {
@@ -70,6 +82,14 @@ app.get('/api/account', async (req, res) => {
         return result
     });
     res.status(200).send(result);
+})
+app.post('/api/account/pic', upload.single('file'), async (req, res) => {
+    fs.readFile(req.file.path, 'hex', async (err, imgData) => {
+        var result = await db_accounts.setAccountPic(imgData, req.body.id).then(result => {
+            return result
+        });
+    })
+    res.status(200).send('true');
 })
 
 //AUTH
