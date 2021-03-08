@@ -7,7 +7,7 @@ let fs = require('fs')
 
 const storageConfig = multer.diskStorage({
     destination: (req, file, cb) =>{
-        cb(null, "uploads");
+        cb(null, "D:\\\\_uploads");
     },
     filename: (req, file, cb) =>{
         cb(null, file.originalname);
@@ -84,11 +84,9 @@ app.get('/api/account', async (req, res) => {
     res.status(200).send(result);
 })
 app.post('/api/account/pic', upload.single('file'), async (req, res) => {
-    fs.readFile(req.file.path, 'hex', async (err, imgData) => {
-        var result = await db_accounts.setAccountPic(imgData, req.body.id).then(result => {
-            return result
-        });
-    })
+    var result = await db_accounts.setAccountPic(req.file, req.body.id).then(result => {
+        return result
+    });
     res.status(200).send('true');
 })
 
