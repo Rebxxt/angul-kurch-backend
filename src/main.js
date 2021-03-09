@@ -130,6 +130,22 @@ app.get('/api/comments', async (req, res) => {
     });
     res.send(result);
 })
+app.get('/api/comments/:id', async (req, res) => {
+    var result = await db_comments.selectCommentById(req.params.id).then(result => {
+        return result
+    }).catch(err => {
+        res.status(403).send(err);
+    });
+    res.send(result);
+})
+app.get('/api/comments/users/article/:id', async (req, res) => {
+    var result = await db_comments.getLikedComments(req.params.id, req.headers.token).then(result => {
+        return result
+    }).catch(err => {
+        res.status(403).send(err);
+    });
+    res.send(result);
+})
 app.post('/api/comments', async (req, res) => {
     var result = await db_comments.addComments(req.body, req.headers.token).then(result => {
         return result
