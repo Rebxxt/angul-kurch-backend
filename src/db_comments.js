@@ -1,27 +1,7 @@
 var connection = require('./connection')
 
+var getCurrentAccount = async function(token) {
 
-var selectComments = async function(articleId) {
-    let query = `SELECT * FROM blog.comments WHERE article_id=${articleId}`
-    const result = await connection.db
-        .query(query)
-        .then(res => {
-            return res
-        })
-        .catch(e => console.error(e.stack))
-    return Promise.all(result.map(async comment => {
-        const query = `SELECT * FROM blog.accounts WHERE id=${comment.author_id}`
-        const account = await connection.db
-            .query(query)
-            .then(res => {
-                return res[0];
-            })
-        comment.author = account;
-        return comment;
-    }))
-}
-
-var addComments = async function(body, token) {
     const getAuthorQuery = `SELECT blog.accounts.id FROM blog.auth_tokens LEFT JOIN blog.accounts ON blog.accounts.login = blog.auth_tokens.login WHERE token='${token}'`
     const authorId = await connection.db
         .query(getAuthorQuery)
@@ -34,6 +14,46 @@ var addComments = async function(body, token) {
     if (typeof authorId !== "number") {
         throw new Error('bad token')
     }
+    return authorId;
+}
+
+var selectComments = async function(articleId) {
+    let query = `SELECT * FROM blog.comments WHERE article_id=${articleId}`
+    const result = await connection.db
+        .query(query)
+        .then(res => {
+            return res
+        })
+        .catch(e => console.error(e.stack))
+    return Promise.all(result.map(async comment => {
+        let query = `SELECT * FROM blog.accounts WHERE id=${comment.author_id}`
+        const account = await connection.db
+            .query(query)
+            .then(res => {
+                return res[0];
+            })
+        comment.author = account;
+        
+        query = `SELECT count(0) as rating, comment_like FROM blog.comment_liked WHERE comment_id=${comment.id} GROUP BY comment_like`
+        const rating = await connection.db
+            .query(query)
+            .then(res => {
+                let result = 0;
+                if (res.length > 0) {
+                    const dislikes = res.filter(el => el.comment_like === false)[0];
+                    const likes = res.filter(el => el.comment_like === true)[0];
+                    result -= dislikes ? parseInt(dislikes.rating) : 0
+                    result += likes ? parseInt(likes.rating) : 0
+                }
+                return result;
+            })
+        comment.rating = rating;
+        return comment;
+    }))
+}
+
+var addComments = async function(body, token) {
+    authorId = await getCurrentAccount(token);
     
     let query = `INSERT INTO blog.comments (author_id, article_id, text, comment_id) VALUES (${authorId}, ${body.article_id}, '${body.text}', ${body.comment_id ? body.comment_id : null})`
     return await connection.db
@@ -43,5 +63,43 @@ var addComments = async function(body, token) {
         })
 }
 
+var likeComment = async function(body, token) {
+    accountId = await getCurrentAccount(token);
+
+    let query = `SELECT comment_id, comment_like FROM blog.comment_liked WHERE comment_id=${body.comment_id} AND account_id=${accountId}`;
+    const check = await connection.db.query(query).then(res => {
+        if (res.length > 0) {
+            if (res[0].comment_like.toString() === body.like) {
+                return 'exist';
+            }
+            return 'update'
+        } else {
+            return 'insert';
+        }
+    })
+
+    if (check === 'insert') {
+        query = `INSERT INTO blog.comment_liked (account_id, comment_id, comment_like) VALUES (${accountId}, ${body.comment_id}, ${body.like})`
+        console.log(query)
+        return await connection.db
+            .query(query)
+            .then(res => {
+                return res
+            }).catch(err => {
+                console.log(err)
+            })
+    } else if (check === 'update') {
+        query = `UPDATE blog.comment_liked SET comment_like=${body.like} WHERE comment_id=${body.comment_id} AND account_id=${accountId}`
+        return await connection.db
+            .query(query)
+            .then(res => {
+                return res
+            })
+    }
+    return false
+
+}
+
 module.exports.selectComments = selectComments
 module.exports.addComments = addComments
+module.exports.likeComment = likeComment

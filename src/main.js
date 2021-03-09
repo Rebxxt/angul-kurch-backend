@@ -138,6 +138,17 @@ app.post('/api/comments', async (req, res) => {
     });
     res.send(result);
 })
+app.post('/api/comments/like', async (req, res) => {
+    var result = await db_comments.likeComment(req.body, req.headers.token).then(result => {
+        return result
+    }).catch(err => {
+        res.status(403).send(err);
+    });
+    if (result === false) {
+        res.status(400).send({err: 'Операция отменена'})
+    }
+    res.send(result);
+})
 
 
 app.listen(port, () => {
