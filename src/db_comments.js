@@ -91,7 +91,7 @@ var selectCommentById = async function(commentId) {
 
 var addComments = async function(body, token) {
     authorId = await getCurrentAccount(token);
-    
+    console.log(body.comment_id)
     let query = `INSERT INTO blog.comments (author_id, article_id, text, comment_id) VALUES (${authorId}, ${body.article_id}, '${body.text}', ${body.comment_id ? body.comment_id : null})`
     return await connection.db
         .query(query)
@@ -138,7 +138,6 @@ var likeComment = async function(body, token) {
 
 var getLikedComments = async function(articleId, token) {
     let query = `SELECT blog.comments.id, comment_like FROM blog.comments right join blog.comment_liked on blog.comments.id=blog.comment_liked.comment_id where article_id=${articleId} AND account_id=${await getCurrentAccount(token)}`
-    console.log(query)
     return await connection.db
         .query(query)
         .then(res => {
