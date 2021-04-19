@@ -23,12 +23,15 @@ function transFormArticlesResponseToResult(response) {
 
 var selectArcticles = async function(filters) {
     const db_accounts = require('./db_accounts')
-    let query = `SELECT * FROM blog.articles WHERE (moderate_apply=${filters.moderate_apply} AND moderate_check=${filters.moderate_check})`
+    let query = `SELECT * FROM blog.articles WHERE (moderate_apply=${filters.moderate_apply != null ? filters.moderate_apply : true} AND moderate_check=${filters.moderate_check != null ? filters.moderate_check : true})`
     if (filters.deleted != true) {
         query += ` AND is_deleted=false`
     }
     if (filters.account_id != null) {
         query += ` AND author_id=${filters.account_id}`
+    }
+    if (filters.search_text != null) {
+        query += ` AND content LIKE '%${filters.search_text}%' `
     }
     return await connection.db
         .query(query)

@@ -91,7 +91,6 @@ var selectCommentById = async function(commentId) {
 
 var addComments = async function(body, token) {
     authorId = await getCurrentAccount(token);
-    console.log(body.comment_id)
     let query = `INSERT INTO blog.comments (author_id, article_id, text, comment_id) VALUES (${authorId}, ${body.article_id}, '${body.text}', ${body.comment_id ? body.comment_id : null})`
     return await connection.db
         .query(query)
