@@ -66,6 +66,12 @@ app.get('/api/article', async (req, res) => {
     });
     res.status(200).send(result);
 })
+app.patch('/api/article', async (req, res) => {
+    var result = await db_articles.editArticle(req.body).then(result => {
+        return result
+    });
+    res.status(200).send(result);
+})
 
 //ACCOUNT
 app.get('/api/account', async (req, res) => {

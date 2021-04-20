@@ -62,6 +62,16 @@ var selectArcticle = async function(id) {
         .catch(e => console.error(e.stack))
 }
 
+var editArticle = async function(updatedBody) {
+    const query = `
+        UPDATE blog.articles SET moderate_check=false, title='${updatedBody.title}', content='${updatedBody.content}'
+            WHERE id=${updatedBody.id}
+    `;
+    return await connection.db
+        .query(query)
+        .then(res => res)
+}
+
 var addArcticles = async function(data) {
     const query = `
         INSERT INTO blog.articles (title, content, author_id) 
@@ -118,3 +128,4 @@ module.exports.addArcticles = addArcticles
 module.exports.deleteArcticles = deleteArcticles
 module.exports.updateRating = updateRating
 module.exports.setStatusArticle = setStatusArticle
+module.exports.editArticle = editArticle
